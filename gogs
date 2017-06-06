@@ -304,6 +304,25 @@ get-users() {
 		 -v "$GOGS_ROOT_URL/api/v1/users/search?q=$search_keyword"
 }
 
+# get an organization by name
+get-org() {
+	local search_keyword=$1
+
+	# ensure search_keyword is passed in
+	if [ -z $search_keyword ]
+	then
+		help "get-orgs"
+
+		exit 1
+	fi
+
+	printf "--" "---> Getting GOGS organization\n"
+
+	curl -H "Content-Type: application.json" \
+		 -H "Authorization: token $GOGS_TOKEN" \
+		 -v "$GOGS_ROOT_URL/api/v1/orgs/$search_keyword"
+}
+
 # get a list of GOGS webhooks for a repo
 # https://github.com/gogits/go-gogs-client/wiki/Repositories-Webhooks#list-hooks
 get-webhooks() {
