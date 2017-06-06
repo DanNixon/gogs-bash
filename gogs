@@ -77,6 +77,60 @@ create-repo() {
 		 -v $GOGS_ROOT_URL/api/v1/admin/users/$user_name/repos
 }
 
+
+mirror-repo() {
+	local owner_uid=$1  # ID of the user / organization where the repo will be created
+	local repo_name=$2  # name of the repo to be created
+	local clone_url=$3  # URL of the repo to be mirrored
+
+	# ensure owner_uid is passed in
+	if [ -z $owner_uid ]
+	then
+		response_code=1
+	fi
+
+	# ensure repo_name is passed in
+	if [ -z $repo_name ]
+	then
+		response_code=1
+	fi
+
+	# ensure clone_url is passed in
+	if [ -z $clone_url ]
+	then
+		response_code=1
+	fi
+
+	# print help and exit either of the variables above are not passed in
+	if [ $response_code -ne 0 ]
+	then
+		help "mirror-repo"
+
+		exit $response_code
+	fi
+
+	printf "--" "---> Creating GOGS repository mirror\n"
+	printf "--" "---> User/Org ID: $owner_uid\n"
+	printf "--" "---> Repo Name: $repo_name\n"
+	printf "--" "---> Source URL: $clone_url\n"
+
+	local body=$(cat <<-END
+		{
+      "uid": $owner_uid,
+			"repo_name": "$repo_name",
+			"private": false,
+      "clone_addr": "$clone_url",
+      "mirror": true
+		}
+	END
+    )
+
+	curl -H "Content-Type: application/json" \
+		 -H "Authorization: token $GOGS_TOKEN" \
+		 -d "$body" \
+		 -v $GOGS_ROOT_URL/api/v1/repos/migrate
+}
+
 # create a GOGS webhook
 # https://github.com/gogits/go-gogs-client/wiki/Repositories-Webhooks#create-a-hook
 create-webhook() {
@@ -114,7 +168,7 @@ create-webhook() {
 	printf "--" "---> Creating GOGS webhook\n"
 	printf "--" "---> Repo Name: $repo_name\n"
 	printf "--" "---> Webhook URL: $webhook_url\n"
-	
+
 	local body=$(cat <<-END
 		{
 			"type": "gogs",
