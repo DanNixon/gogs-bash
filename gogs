@@ -311,7 +311,7 @@ get-org() {
 	# ensure search_keyword is passed in
 	if [ -z $search_keyword ]
 	then
-		help "get-orgs"
+		help "get-org"
 
 		exit 1
 	fi
@@ -375,6 +375,22 @@ help() {
 
 			    user_name   name of the user or organization where the repo will be created
 			    repo_name   name of the repository to be created
+			END
+			;;
+
+		mirror-repo)
+			cat <<-END
+			Create a GOGS repository that mirrors an external Git repository.
+
+			Usage:
+
+			    $prog_name $1 <owner_uid> <repo_name> <clone_url>
+
+			Arguments:
+
+          owner_uid   ID of the owner of the mirrored repository
+			    repo_name   name of the repository to be created
+          clone_url   URL of the repository to be mirrores
 			END
 			;;
 
@@ -466,6 +482,19 @@ help() {
 			END
 			;;
 
+    get-org)
+			cat <<-END
+			Gets a GOGS organization by name.
+
+			Usage:
+			    $prog_name $1	<name>
+
+			Arguments:
+
+			    name  name of the organization
+			END
+      ;;
+
 		get-webhooks)
 			cat <<-END
 			Get a list of GOGS webhooks for a repo.
@@ -491,12 +520,14 @@ help() {
 			The commands are:
 
 			    create-repo     create a repository
+			    mirror-repo     mirrors a repository
 			    create-webhook  create a webhook
 			    delete-webhook  delete a webhook
 			    env             print environment information
 			    get-repos       get a list of repos by search keyword
 			    get-user-repos  get a list of repos for a user
 			    get-users       get a list of users by search keyword
+			    get-org         gets an organization by name
 			    get-webhooks    get a list of webhooks for a repo
 
 			Use "$prog_name help [command]" for more information about a command.
